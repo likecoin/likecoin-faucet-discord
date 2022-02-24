@@ -3,7 +3,7 @@
     "dev": "yarn tsx --watch & yarn nodemon --watch dist dist/index.js",
     "start": "yarn build && yarn serve",
     "build": "yarn tsc",
-    "serve": "node dist/index.js",
+    "serve": "NODE_OPTIONS=--openssl-legacy-provider node dist/index.js",
     "test": "yarn lint && yarn typecheck && yarn check-format",
     "check-format": "prettier --list-different '**/*.ts'",
     "format": "prettier --write --list-different '**/*.ts'",
@@ -11,9 +11,9 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@cosmostation/cosmosjs": "0.11.1",
     "@discordjs/builders": "^0.12.0",
     "@discordjs/rest": "0.3.0",
+    "@oraichain/cosmosjs": "^0.0.84",
     "discord-api-types": "0.27.2",
     "discord.js": "13.6.0",
     "dotenv": "^16.0.0"

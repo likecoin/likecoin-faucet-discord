@@ -1,16 +1,23 @@
 import { REST } from "@discordjs/rest";
 import { Client, Intents, ClientOptions, Interaction } from "discord.js";
 import { Routes } from "discord-api-types/v10";
-import { ModuleList } from "../command/modules";
 import ApplicationConfig from "../config/config";
+import { Command } from "../models/discord/command";
+
+interface DiscordClient {
+  client: Client;
+  run: () => void;
+  registerCommandModule: (command: Command) => void;
+}
 
 const defaultOptions: ClientOptions = {
   intents: [Intents.FLAGS.GUILDS],
 };
 
-const DiscordClient = (options?: ClientOptions) => {
+const DiscordClient = (options?: ClientOptions): DiscordClient => {
   const { discordToken, channelId } = ApplicationConfig;
   const client = new Client({ ...defaultOptions, options } as ClientOptions);
+  const moduleList: Command[] = [];
 
   const registerCommands = async (
     clientToken: string,
@@ -23,7 +30,7 @@ const DiscordClient = (options?: ClientOptions) => {
 
     if (channel.type !== "GUILD_TEXT") return;
 
-    const commandJSONData = ModuleList.map((c) => c.config.toJSON());
+    const commandJSONData = moduleList.map((c) => c.config.toJSON());
 
     return request.put(
       Routes.applicationGuildCommands(clientId, channel.guildId),
@@ -36,7 +43,7 @@ const DiscordClient = (options?: ClientOptions) => {
   const onInteraction = async (interaction: Interaction) => {
     if (!interaction.isCommand()) return;
 
-    const command = ModuleList.find(
+    const command = moduleList.find(
       (c) => c.config.name === interaction.commandName
     );
 
@@ -55,10 +62,18 @@ const DiscordClient = (options?: ClientOptions) => {
     console.log("Faucet is up");
   };
 
+  const registerCommandModule = (command: Command) => {
+    moduleList.push(command);
+  };
+
+  const run = () => {
+    client.login(discordToken);
+  };
+
   client.once("ready", onClientReady);
   client.on("interactionCreate", onInteraction);
 
-  client.login(discordToken);
+  return { client, run, registerCommandModule };
 };
 
 export default DiscordClient;

@@ -1,8 +1,9 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { CommandInteraction } from "discord.js";
-import { Command } from "../../models/discord/command";
+import CosmosClient from "../client/cosmos";
+import { Command } from "../models/discord/command";
 
-const FaucetModule = (): Command => {
+const FaucetModule = (cosmosClient: CosmosClient): Command => {
   const config = new SlashCommandBuilder()
     .setName("faucet")
     .setDescription("Receive test token for skynet")
@@ -17,8 +18,18 @@ const FaucetModule = (): Command => {
 
   const onCommand = async (interaction: CommandInteraction) => {
     await interaction.deferReply();
-    await new Promise((r) => setTimeout(r, 500));
-    await interaction.editReply("HelloWorld");
+    const address = interaction.options.getString("address", true);
+    try {
+      const result = await cosmosClient.distribute(address);
+      await interaction.editReply(
+        `Transaction submitted, txhash: \`${result.tx_response.txhash}\``
+      );
+    } catch (err) {
+      console.error(`Failed to create transaction to ${address} = `, err);
+      await interaction.editReply(
+        `Failed to create transaction to \`${address}\`, Please try again later`
+      );
+    }
   };
 
   return {
