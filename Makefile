@@ -8,7 +8,7 @@ DOCKER_OPT ?= --platform=linux/amd64
 endif
 
 .PHONY: setup
-setup: vendor 
+setup: vendor
 	cp .env.example .env
 
 .PHONY: vendor
@@ -20,12 +20,12 @@ lint:
 	yarn lint
 
 .PHONY: format
-format: 
+format:
 	yarn format
 
 .PHONY: ci
 ci:
-	yarn test 
+	yarn test
 
 .PHONY: docker-build
 docker-build:

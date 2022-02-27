@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: discord
+  name: discord
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: discord
+  template:
+    metadata:
+      labels:
+        app: discord
+    spec:
+      containers:
+        - name: discord
+          image: "{{ .Values.image.registry }}/likecoin-faucet:{{ .Values.image.buildTag }}"
+          env:
+            - name: DISCORD_TOKEN
+              value: {{ .Values.discord.token }} 
+            - name: CHANNEL_ID
+              value: {{ .Values.discord.channelId | quote }}
+            - name: FAUCET_MNEMONIC
+              value: {{ .Values.faucet.mnemonic }}
+            - name: FAUCET_CHAIN_ID
+              value: {{ .Values.faucet.chainId }}
+            - name: FAUCET_REST_URL
+              value: {{ .Values.faucet.restUrl }}
+            - name: FAUCET_DENOM
+              value: {{ .Values.faucet.denom }}
+            - name: FAUCET_AMOUNT
+              value: {{ .Values.faucet.amount | quote }}
+            - name: FAUCET_TOKEN_PREFIX
+              value: {{ .Values.faucet.tokenPrefix }}
+            - name: FAUCET_COOLDOWN
+              value: {{ .Values.faucet.cooldown }}
+            

@@ -1,0 +1,13 @@
+image:
+  registry: gcr.io/oursky-kube
+discord:
+  token: ""
+  channelId: ""
+faucet:
+  mnemonic: ""
+  chainId: likecoin-skynet-1
+  restUrl: ""
+  denom: nanolike
+  amount: "1000000000"
+  tokenPrefix: cosmos
+  cooldown: day
