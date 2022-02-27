@@ -4,6 +4,7 @@ import { TransactionResponse } from '../models/cosmos/message';
 
 interface CosmosClient {
   distribute: (address: string) => Promise<TransactionResponse>;
+  checkAccount: (address: string) => Promise<boolean>;
 }
 
 const CosmosClient = (): CosmosClient => {
@@ -14,6 +15,11 @@ const CosmosClient = (): CosmosClient => {
 
   const accountKey = client.getChildKey(Config.faucet.mnemonic);
   const faucetAccount = client.getAddress(accountKey);
+
+  const checkAccount = async (address: string): Promise<boolean> => {
+    const res = await client.getAccounts(address);
+    return !!res['account'];
+  };
 
   const distribute = async (address: string): Promise<TransactionResponse> => {
     const msgSend = new message.cosmos.bank.v1beta1.MsgSend({
@@ -37,7 +43,7 @@ const CosmosClient = (): CosmosClient => {
     return client.submit(accountKey, txBody, 'BROADCAST_MODE_BLOCK', [0]);
   };
 
-  return { distribute };
+  return { distribute, checkAccount };
 };
 
 export default CosmosClient;
