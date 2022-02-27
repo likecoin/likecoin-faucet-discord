@@ -1,4 +1,5 @@
 import dotenv from 'dotenv';
+import { Interval } from 'limiter';
 import { ApplicationConfig } from '../models/config';
 
 dotenv.config();
@@ -7,6 +8,7 @@ const config: ApplicationConfig = {
   discordToken: process.env.DISCORD_TOKEN ?? '',
   channelId: process.env.CHANNEL_ID ?? '',
   faucet: {
+    cooldown: (process.env.FAUCET_COOLDOWN as Interval | undefined) ?? 'day',
     prefix: process.env.FAUCET_TOKEN_PREFIX ?? 'cosmos',
     mnemonic: process.env.FAUCET_MNEMONIC ?? '',
     chainId: process.env.FAUCET_CHAIN_ID ?? '',

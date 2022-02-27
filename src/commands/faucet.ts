@@ -2,8 +2,12 @@ import { SlashCommandBuilder } from '@discordjs/builders';
 import { CommandInteraction } from 'discord.js';
 import CosmosClient from '../client/cosmos';
 import { Command } from '../models/discord/command';
+import { useRateLimiter } from '../hooks/limiter';
+import Config from '../config/config';
 
 const FaucetModule = (cosmosClient: CosmosClient): Command => {
+  const rateLimiter = useRateLimiter(Config.faucet.cooldown);
+
   const config = new SlashCommandBuilder()
     .setName('faucet')
     .setDescription('Receive test token for skynet')
@@ -20,11 +24,19 @@ const FaucetModule = (cosmosClient: CosmosClient): Command => {
     await interaction.deferReply();
     const address = interaction.options.getString('address', true);
 
-    const accountCheck = await cosmosClient.checkAccount(address);
+    const validAccount = await cosmosClient.checkAccount(address);
 
-    if (!accountCheck) {
+    if (!validAccount) {
       await interaction.editReply(
         `Invalid address: \`${address}\`, Please double check your input`,
+      );
+      return;
+    }
+
+    const rateLimited = rateLimiter.get(address);
+    if (rateLimited) {
+      await interaction.editReply(
+        `Token already sent to address: \`${address}\`, Please come back again in a day`,
       );
       return;
     }

@@ -1,3 +1,5 @@
+import { Interval } from 'limiter';
+
 export interface ApplicationConfig {
   discordToken: string;
   channelId: string;
@@ -8,5 +10,6 @@ export interface ApplicationConfig {
     denom: string;
     amount: number;
     prefix: string;
+    cooldown: Interval;
   };
 }
