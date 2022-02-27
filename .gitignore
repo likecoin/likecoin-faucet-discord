@@ -1,4 +1,6 @@
 dist
 .env
 node_modules
-.DS_STORE
+.DS_STORE/.blackbox/pubring.gpg~
+/.blackbox/pubring.kbx~
+/.blackbox/secring.gpg
