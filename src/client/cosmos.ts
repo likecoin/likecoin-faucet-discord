@@ -1,6 +1,6 @@
-import Cosmos from "@oraichain/cosmosjs";
-import Config from "../config/config";
-import { TransactionResponse } from "../models/cosmos/message";
+import Cosmos from '@oraichain/cosmosjs';
+import Config from '../config/config';
+import { TransactionResponse } from '../models/cosmos/message';
 
 interface CosmosClient {
   distribute: (address: string) => Promise<TransactionResponse>;
@@ -8,7 +8,7 @@ interface CosmosClient {
 
 const CosmosClient = (): CosmosClient => {
   const client = new Cosmos(Config.faucet.restUrl, Config.faucet.chainId);
-  client.setBech32MainPrefix("cosmos");
+  client.setBech32MainPrefix('cosmos');
 
   const message = Cosmos.message;
 
@@ -25,16 +25,16 @@ const CosmosClient = (): CosmosClient => {
     });
 
     const msgSendAny = new message.google.protobuf.Any({
-      type_url: "/cosmos.bank.v1beta1.MsgSend",
+      type_url: '/cosmos.bank.v1beta1.MsgSend',
       value: message.cosmos.bank.v1beta1.MsgSend.encode(msgSend).finish(),
     });
 
     const txBody = new message.cosmos.tx.v1beta1.TxBody({
       messages: [msgSendAny],
-      memo: "",
+      memo: '',
     });
 
-    return client.submit(accountKey, txBody, "BROADCAST_MODE_BLOCK", [0]);
+    return client.submit(accountKey, txBody, 'BROADCAST_MODE_BLOCK', [0]);
   };
 
   return { distribute };

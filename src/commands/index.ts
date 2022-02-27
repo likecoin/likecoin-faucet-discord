@@ -1,3 +1,3 @@
-import { FaucetModule } from "./faucet";
+import { FaucetModule } from './faucet';
 
 export { FaucetModule };

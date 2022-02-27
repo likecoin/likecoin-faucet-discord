@@ -1,0 +1,57 @@
+{
+  "root": true,
+  "plugins": ["@oursky", "import"],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "sourceType": "module",
+    "project": "./tsconfig.json"
+  },
+  "extends": [
+    "plugin:@oursky/eslint",
+    "plugin:@oursky/oursky",
+    "plugin:@oursky/typescript",
+    "plugin:@oursky/tsdoc"
+  ],
+  "env": {
+    "es6": true,
+    "jest": true,
+    "node": true
+  },
+  "globals": {
+    "fetch": true,
+    "__DEV__": true
+  },
+  "rules": {
+    "@typescript-eslint/no-base-to-string": "off",
+    "@typescript-eslint/no-redeclare": "off",
+    "@typescript-eslint/no-require-imports": "off",
+    "@typescript-eslint/no-use-before-define": ["error"],
+    "@typescript-eslint/no-unused-vars": ["error"],
+    "@typescript-eslint/restrict-template-expressions": "off",
+    "complexity": ["error", 15],
+    "no-restricted-imports": [
+      "error",
+      {
+        "paths": [
+          {
+            "name": "react-native",
+            "importNames": ["Text", "TextInput"],
+            "message": "Please use AppText/LocalizedText/LocalizedTextInput instead"
+          },
+          {
+            "name": "react-native-render-html",
+            "importNames": ["default", "RenderHTML"],
+            "message": "Please use HTMLView instead"
+          },
+          {
+            "name": "react-native-youtube-iframe",
+            "importNames": ["default"],
+            "message": "Please use components/YoutubePlayer instead"
+          }
+        ]
+      }
+    ],
+    "no-use-before-define": "off",
+    "no-unused-vars": "off"
+  }
+}
