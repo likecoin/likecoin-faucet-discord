@@ -1,0 +1,13 @@
+version: "3.8"
+services:
+  discord:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - /usr/src/app/dist
+      - /usr/src/app/node_modules
+      - ./:/usr/src/app
+    env_file:
+      - ./.env
+    command: ["yarn", "dev"]
