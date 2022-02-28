@@ -1,0 +1,96 @@
+stages:
+  - test
+  - build
+  - deploy
+
+.setup_docker: &setup_docker |-
+  curl -fsSLO https://download.docker.com/linux/static/stable/x86_64/docker-${DOCKERVERSION}.tgz
+  tar xzvf docker-${DOCKERVERSION}.tgz --strip 1 -C /usr/local/bin docker/docker
+  rm docker-${DOCKERVERSION}.tgz
+  curl -L https://github.com/docker/compose/releases/download/v2.2.2/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
+  chmod +x /usr/local/bin/docker-compose
+
+.setup_blackbox: &setup_blackbox
+  - git clone --branch v1.20180618 --depth 1 https://github.com/StackExchange/blackbox.git "$HOME/.blackbox" && export PATH="$HOME/.blackbox/bin:$PATH"
+  - gpg --import $OURSKY_FASENG_GPG_FILE
+  - blackbox_decrypt_all_files
+
+.setup_gcloud_sdk: &setup_gcloud_sdk |-
+  wget https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-366.0.0-linux-x86_64.tar.gz \
+      && mkdir -p /usr/local/gcloud \
+      && tar -C /usr/local/gcloud -zxf google-cloud-sdk-366.0.0-linux-x86_64.tar.gz \
+      && /usr/local/gcloud/google-cloud-sdk/install.sh \
+      && export PATH=$PATH:/usr/local/gcloud/google-cloud-sdk/bin
+
+.setup_helm: &setup_helm |-
+  wget https://get.helm.sh/helm-v3.7.1-linux-amd64.tar.gz \
+      && tar -zxf helm-v3.7.1-linux-amd64.tar.gz \
+      && mv linux-amd64/helm /usr/local/bin/
+
+.setup_gpg_key: &setup_gpg_key |-
+  gpg -v --import $OURSKY_FASENG_GPG_FILE
+
+.login_oursky_k8s: &login_oursky_k8s |-
+  gcloud auth activate-service-account gitlab-runner@oursky-kube.iam.gserviceaccount.com --key-file=${OURSKY_KUBE_GITLAB_RUNNER_KEY_FILE} --project oursky-kube
+  gcloud container clusters get-credentials pandawork --zone us-east1-b --project oursky-kube
+
+.login_oursky_gcrio: &login_oursky_gcrio |-
+  cat ${OURSKY_KUBE_GITLAB_RUNNER_KEY_FILE} | docker login -u _json_key --password-stdin https://gcr.io
+
+test:discord:
+  stage: test
+  tags:
+    - az-docker
+  image: node:16.9
+  before_script:
+    - make setup
+  script:
+    - make ci
+
+build:discord:
+  stage: build
+  image: google/cloud-sdk:300.0.0-alpine
+  only:
+    - master
+  services:
+    - name: docker:dind
+  variables:
+    ENV: dev
+    DOCKERVERSION: "20.10.8"
+    DOCKER_HOST: "tcp://docker:2375"
+    DOCKER_TLS_CERTDIR: ""
+  tags:
+    - docker
+    - dind
+  before_script:
+    - *setup_gpg_key
+    - *setup_docker
+    - *setup_blackbox
+  script:
+    - *login_oursky_gcrio
+    - make docker-build
+    - make docker-push
+
+deploy:discord:
+  stage: deploy
+  image: google/cloud-sdk:300.0.0-alpine
+  only:
+    - master
+  variables:
+    ENV: dev
+    DOCKERVERSION: "20.10.8"
+    DOCKER_HOST: "tcp://docker:2375"
+    DOCKER_TLS_CERTDIR: ""
+  tags:
+    - docker
+    - dind
+  services:
+    - name: docker:dind
+  before_script:
+    - *setup_gpg_key
+    - *setup_blackbox
+    - gcloud components install --quiet kubectl
+    - *setup_helm
+  script:
+    - *login_oursky_k8s
+    - make -C deploy deploy
