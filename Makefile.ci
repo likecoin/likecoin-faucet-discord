@@ -1,0 +1,5 @@
+.PHONY: ci-vendor
+ci-vendor:
+	echo 'yarn-offline-mirror ".yarn-cache/"' >> .yarnrc
+	echo 'yarn-offline-mirror-pruning true' >> .yarnrc
+	yarn install --offline || yarn install --frozen-lockfile --no-progress

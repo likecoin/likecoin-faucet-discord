@@ -6,3 +6,5 @@ node_modules
 /.blackbox/pubring.kbx~
 /.blackbox/secring.gpg
 /deploy/likecoin-faucet/values.yaml
+.yarnrc
+.yarn-cache

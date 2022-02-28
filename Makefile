@@ -1,3 +1,5 @@
+include ./Makefile.ci
+
 BUILD_TAG ?= $(shell git rev-parse --short HEAD)
 DOCKER_REGISTRY := gcr.io/oursky-kube
 DOCKER_IMAGE := ${DOCKER_REGISTRY}/likecoin-faucet:${BUILD_TAG}
