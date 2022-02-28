@@ -24,15 +24,6 @@ const FaucetModule = (cosmosClient: CosmosClient): Command => {
     await interaction.deferReply();
     const address = interaction.options.getString('address', true);
 
-    const validAccount = await cosmosClient.checkAccount(address);
-
-    if (!validAccount) {
-      await interaction.editReply(
-        `Invalid address: \`${address}\`, Please double check your input`,
-      );
-      return;
-    }
-
     const rateLimited = rateLimiter.get(address);
     if (rateLimited) {
       await interaction.editReply(
