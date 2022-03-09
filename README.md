@@ -6,7 +6,7 @@ A Discord.js based bot client that distributes test tokens for the cosmos chain 
 
 ### Dev
 
-- [Testing Server](https://discord.gg/Z74JwbBR)
+- [Testing Server](https://discord.gg/c975mzVYQ8)
 - [Bot Invite](https://discord.com/api/oauth2/authorize?client_id=946305914472919060&permissions=3072&scope=bot%20applications.commands)
 
 ## Development
