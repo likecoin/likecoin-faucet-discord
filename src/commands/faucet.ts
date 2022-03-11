@@ -22,7 +22,17 @@ const FaucetModule = (cosmosClient: CosmosClient): Command => {
 
   const onCommand = async (interaction: CommandInteraction) => {
     await interaction.deferReply();
+
+    if (interaction.channelId !== Config.channelId) {
+      await interaction.editReply(
+        `Please use this command in the dedicated channel: <#${Config.channelId}>`,
+      );
+      return;
+    }
+
     const address = interaction.options.getString('address', true);
+
+    console.debug(`Token request to address ${address}`);
 
     const rateLimited = rateLimiter.get(address);
     if (rateLimited) {
