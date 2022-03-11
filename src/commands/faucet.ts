@@ -25,7 +25,7 @@ const FaucetModule = (cosmosClient: CosmosClient): Command => {
 
     if (interaction.channelId !== Config.channelId) {
       await interaction.editReply(
-        `Please use this command in the dedicated channel: <#${Config.channelId}>`,
+        `:negative_squared_cross_mark: Please use this command in the dedicated channel: <#${Config.channelId}>`,
       );
       return;
     }
@@ -37,20 +37,21 @@ const FaucetModule = (cosmosClient: CosmosClient): Command => {
     const rateLimited = rateLimiter.get(address);
     if (rateLimited) {
       await interaction.editReply(
-        `Token already sent to address: \`${address}\`, Please come back again in a day`,
+        `:negative_squared_cross_mark: Token already sent to address: \`${address}\`, Please come back again in a day`,
       );
       return;
     }
 
     try {
       const result = await cosmosClient.distribute(address);
+      rateLimiter.limit(address);
       await interaction.editReply(
-        `Transaction submitted, txhash: \`${result.tx_response.txhash}\``,
+        `:white_check_mark: Transaction submitted, txhash: \`${result.tx_response.txhash}\``,
       );
     } catch (err: unknown) {
       console.error(`Failed to create transaction to ${address} = `, err);
       await interaction.editReply(
-        `Failed to create transaction to \`${address}\`, Please try again later`,
+        `:warning: Failed to create transaction to \`${address}\`, Please try again later`,
       );
     }
   };
