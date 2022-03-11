@@ -9,5 +9,5 @@ faucet:
   restUrl: ""
   denom: nanolike
   amount: "1000000000"
-  tokenPrefix: cosmos
+  addressPrefix: cosmos
   cooldown: day

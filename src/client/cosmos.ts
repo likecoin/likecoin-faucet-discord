@@ -9,7 +9,7 @@ interface CosmosClient {
 
 const CosmosClient = (): CosmosClient => {
   const client = new Cosmos(Config.faucet.restUrl, Config.faucet.chainId);
-  client.setBech32MainPrefix('cosmos');
+  client.setBech32MainPrefix(Config.faucet.addressPrefix);
 
   const message = Cosmos.message;
 

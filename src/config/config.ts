@@ -9,7 +9,7 @@ const config: ApplicationConfig = {
   channelId: process.env.CHANNEL_ID ?? '',
   faucet: {
     cooldown: (process.env.FAUCET_COOLDOWN as Interval | undefined) ?? 'day',
-    prefix: process.env.FAUCET_TOKEN_PREFIX ?? 'cosmos',
+    addressPrefix: process.env.FAUCET_ADDRESS_PREFIX ?? 'cosmos',
     mnemonic: process.env.FAUCET_MNEMONIC ?? '',
     chainId: process.env.FAUCET_CHAIN_ID ?? '',
     restUrl: process.env.FAUCET_REST_URL ?? '',

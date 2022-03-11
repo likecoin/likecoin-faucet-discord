@@ -9,7 +9,7 @@ export interface ApplicationConfig {
     restUrl: string;
     denom: string;
     amount: number;
-    prefix: string;
+    addressPrefix: string;
     cooldown: Interval;
   };
 }
