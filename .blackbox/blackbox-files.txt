@@ -1,1 +1,2 @@
-deploy/likecoin-faucet/values.yaml
+deploy/likecoin-faucet/values-skynet.yaml
+deploy/likecoin-faucet/values-testnet.yaml

@@ -5,6 +5,6 @@ node_modules
 /.blackbox/pubring.gpg~
 /.blackbox/pubring.kbx~
 /.blackbox/secring.gpg
-/deploy/likecoin-faucet/values.yaml
+/deploy/likecoin-faucet/values-*.yaml
 .yarnrc
 .yarn-cache

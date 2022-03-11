@@ -2,24 +2,26 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: discord
-  name: discord
+    app: discord-{{ .Values.env }}
+    app.kubernetes.io/name: discord-{{ .Values.env }}
+    app.kubernetes.io/instance: discord-{{ .Values.env }}
+  name: discord-{{ .Values.env }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: discord
+      app: discord-{{ .Values.env }}
   template:
     metadata:
       labels:
-        app: discord
+        app: discord-{{ .Values.env }}
     spec:
       containers:
         - name: discord
-          image: "{{ .Values.image.registry }}/likecoin-faucet:{{ .Values.image.buildTag }}"
+          image: '{{ .Values.image.registry }}/likecoin-faucet:{{ .Values.image.buildTag }}'
           env:
             - name: DISCORD_TOKEN
-              value: {{ .Values.discord.token }} 
+              value: {{ .Values.discord.token }}
             - name: CHANNEL_ID
               value: {{ .Values.discord.channelId | quote }}
             - name: FAUCET_MNEMONIC
@@ -36,4 +38,3 @@ spec:
               value: {{ .Values.faucet.tokenPrefix }}
             - name: FAUCET_COOLDOWN
               value: {{ .Values.faucet.cooldown }}
-            
