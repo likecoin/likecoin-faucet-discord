@@ -5,6 +5,7 @@ import {
   ClientOptions,
   Interaction,
   ApplicationCommand,
+  Guild,
 } from 'discord.js';
 import { Routes } from 'discord-api-types/v10';
 import ApplicationConfig from '../config/config';
@@ -32,20 +33,26 @@ const DiscordClient = (options?: ClientOptions): DiscordClient => {
   ): Promise<ApplicationCommand | null> => {
     const request = new REST({ version: '10' }).setToken(clientToken);
 
-    const channel = await client.channels.fetch(channelId);
+    try {
+      const channel = await client.channels.fetch(channelId);
 
-    if (!channel || channel.type !== 'GUILD_TEXT') {
+      if (!channel || channel.type !== 'GUILD_TEXT') {
+        return null;
+      }
+
+      const commandJSONData = moduleList.map((c) => c.config.toJSON());
+
+      const res = await request.put(
+        Routes.applicationGuildCommands(clientId, channel.guildId),
+        {
+          body: commandJSONData,
+        },
+      );
+      return res as ApplicationCommand;
+    } catch (err: unknown) {
+      console.error('Failed to register commands', err);
       return null;
     }
-
-    const commandJSONData = moduleList.map((c) => c.config.toJSON());
-
-    return request.put(
-      Routes.applicationGuildCommands(clientId, channel.guildId),
-      {
-        body: commandJSONData,
-      },
-    ) as Promise<ApplicationCommand>;
   };
 
   const onInteraction = async (interaction: Interaction) => {
@@ -73,6 +80,24 @@ const DiscordClient = (options?: ClientOptions): DiscordClient => {
     console.log('Faucet is up');
   };
 
+  const onNewInvite = async (guild: Guild) => {
+    const targetChannel = await guild.channels.fetch(channelId);
+
+    if (!targetChannel) {
+      console.error(
+        'Bot joined a new server, but targeted channel is not in the server',
+      );
+      return;
+    }
+
+    if (!client.user) {
+      console.error('Unable to fetch bot user');
+      return;
+    }
+
+    await registerCommands(discordToken, client.user.id, channelId);
+  };
+
   const registerCommandModule = (command: Command) => {
     moduleList.push(command);
   };
@@ -84,6 +109,7 @@ const DiscordClient = (options?: ClientOptions): DiscordClient => {
 
   client.once('ready', onClientReady);
   client.on('interactionCreate', onInteraction);
+  client.on('guildCreate', onNewInvite);
 
   return { client, run, registerCommandModule };
 };
