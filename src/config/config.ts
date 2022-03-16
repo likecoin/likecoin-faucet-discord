@@ -17,6 +17,7 @@ const config: ApplicationConfig = {
     amount: process.env.FAUCET_AMOUNT
       ? parseInt(process.env.FAUCET_AMOUNT, 10)
       : 1000000000,
+    fee: process.env.FAUCET_FEE ?? '20000000',
   },
 };
 

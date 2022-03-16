@@ -43,10 +43,10 @@ const FaucetModule = (cosmosClient: CosmosClient): Command => {
     }
 
     try {
-      const result = await cosmosClient.distribute(address);
+      const txHash = await cosmosClient.distribute(address);
       rateLimiter.limit(address);
       await interaction.editReply(
-        `:white_check_mark: Transaction submitted, txhash: \`${result.tx_response.txhash}\``,
+        `:white_check_mark: Transaction submitted, txhash: \`${txHash}\``,
       );
     } catch (err: unknown) {
       console.error(`Failed to create transaction to ${address} = `, err);

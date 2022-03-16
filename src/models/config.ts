@@ -11,5 +11,6 @@ export interface ApplicationConfig {
     amount: number;
     addressPrefix: string;
     cooldown: Interval;
+    fee: string;
   };
 }

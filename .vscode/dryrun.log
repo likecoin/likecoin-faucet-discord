@@ -1,0 +1,7 @@
+make --dry-run --always-make --keep-going --print-directory
+make: Entering directory `/Users/hochiw/Documents/Projects/likecoin-faucet'
+echo 'yarn-offline-mirror ".yarn-cache/"' >> .yarnrc
+echo 'yarn-offline-mirror-pruning true' >> .yarnrc
+yarn install --offline || yarn install --frozen-lockfile --no-progress
+make: Leaving directory `/Users/hochiw/Documents/Projects/likecoin-faucet'
+ 

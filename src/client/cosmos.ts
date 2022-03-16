@@ -1,9 +1,10 @@
 import Cosmos from '@oraichain/cosmosjs';
+import Long from 'long';
 import Config from '../config/config';
 import { TransactionResponse } from '../models/cosmos/message';
 
 interface CosmosClient {
-  distribute: (address: string) => Promise<TransactionResponse>;
+  distribute: (address: string) => Promise<string>;
   checkAccount: (address: string) => Promise<boolean>;
 }
 
@@ -13,17 +14,20 @@ const CosmosClient = (): CosmosClient => {
 
   const message = Cosmos.message;
 
-  const accountKey = client.getChildKey(Config.faucet.mnemonic);
-  const faucetAccount = client.getAddress(accountKey);
+  const privKey = client.getECPairPriv(Config.faucet.mnemonic);
+  const pubKeyAny = client.getPubKeyAny(privKey);
+  const faucetAddress = client.getAddress(Config.faucet.mnemonic);
 
   const checkAccount = async (address: string): Promise<boolean> => {
     const res = await client.getAccounts(address);
     return !!res['account'];
   };
 
-  const distribute = async (address: string): Promise<TransactionResponse> => {
+  const distribute = async (address: string): Promise<string> => {
+    const accountData = await client.getAccounts(faucetAddress);
+
     const msgSend = new message.cosmos.bank.v1beta1.MsgSend({
-      from_address: faucetAccount,
+      from_address: faucetAddress,
       to_address: address,
       amount: [
         { denom: Config.faucet.denom, amount: Config.faucet.amount.toString() },
@@ -40,7 +44,43 @@ const CosmosClient = (): CosmosClient => {
       memo: '',
     });
 
-    return client.submit(accountKey, txBody, 'BROADCAST_MODE_BLOCK', [0]);
+    const signerInfo = new message.cosmos.tx.v1beta1.SignerInfo({
+      public_key: pubKeyAny,
+      mode_info: {
+        single: {
+          mode: message.cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_DIRECT,
+        },
+      },
+      sequence: accountData.account.sequence,
+    });
+
+    const fee = new message.cosmos.tx.v1beta1.Fee({
+      amount: [{ denom: Config.faucet.denom, amount: Config.faucet.fee }],
+      gas_limit: Long.fromInt(200000),
+    });
+
+    const authInfo = new message.cosmos.tx.v1beta1.AuthInfo({
+      signer_infos: [signerInfo],
+      fee: fee,
+    });
+
+    const signedTxBytes = client.sign(
+      txBody,
+      authInfo,
+      accountData.account.account_number,
+      privKey,
+    );
+
+    const res: TransactionResponse = await client.broadcast(
+      signedTxBytes,
+      'BROADCAST_MODE_BLOCK',
+    );
+
+    if (res.tx_response.code !== 0) {
+      throw new Error(res.tx_response.raw_log);
+    }
+
+    return res.tx_response.txhash;
   };
 
   return { distribute, checkAccount };
