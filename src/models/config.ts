@@ -1,6 +1,7 @@
 import { Interval } from 'limiter';
 
 export interface ApplicationConfig {
+  env: string;
   discordToken: string;
   channelId: string;
   faucet: {

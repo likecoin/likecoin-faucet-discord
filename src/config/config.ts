@@ -5,6 +5,7 @@ import { ApplicationConfig } from '../models/config';
 dotenv.config();
 
 const config: ApplicationConfig = {
+  env: process.env.ENV!,
   discordToken: process.env.DISCORD_TOKEN ?? '',
   channelId: process.env.CHANNEL_ID ?? '',
   faucet: {

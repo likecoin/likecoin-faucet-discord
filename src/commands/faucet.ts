@@ -10,7 +10,7 @@ const FaucetModule = (cosmosClient: CosmosClient): Command => {
 
   const config = new SlashCommandBuilder()
     .setName('faucet')
-    .setDescription('Receive test token for skynet')
+    .setDescription(`Receive test token for ${Config.env}`)
     .addStringOption((option) =>
       option
         .setName('address')
@@ -46,7 +46,7 @@ const FaucetModule = (cosmosClient: CosmosClient): Command => {
       const txHash = await cosmosClient.distribute(address);
       rateLimiter.limit(address);
       await interaction.editReply(
-        `:white_check_mark: Transaction submitted, txhash: \`${txHash}\``,
+        `:white_check_mark: Transaction submitted, txhash: [${txHash}](${Config.faucet.restUrl}/cosmos/tx/v1beta1/txs/${txHash})`,
       );
     } catch (err: unknown) {
       console.error(`Failed to create transaction to ${address} = `, err);

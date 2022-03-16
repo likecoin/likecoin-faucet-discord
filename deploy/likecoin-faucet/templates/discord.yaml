@@ -20,6 +20,8 @@ spec:
         - name: discord
           image: '{{ .Values.image.registry }}/likecoin-faucet:{{ .Values.image.buildTag }}'
           env:
+            - name: ENV
+              value: {{ .Values.env }}
             - name: DISCORD_TOKEN
               value: {{ .Values.discord.token }}
             - name: CHANNEL_ID
