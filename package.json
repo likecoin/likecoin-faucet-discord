@@ -18,7 +18,7 @@
     "dotenv": "16.0.0",
     "limiter": "2.1.0"
   },
-  "name": "likecoin-faucet",
+  "name": "likecoin-faucet-discord",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
