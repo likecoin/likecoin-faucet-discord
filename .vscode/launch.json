@@ -1,0 +1,33 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch via Node (en)",
+      "request": "launch",
+      "type": "node",
+      "program": "${workspaceFolder}/src/index.ts",
+      "runtimeVersion": "16",
+      "preLaunchTask": "tsc: build - tsconfig.json",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "outFiles": [
+        "${workspaceFolder}/dist/**/*.js",
+      ]
+    },
+    {
+      "name": "Launch via Node (zh-tw)",
+      "request": "launch",
+      "type": "node",
+      "program": "${workspaceFolder}/src/index.ts",
+      "runtimeVersion": "16",
+      "preLaunchTask": "tsc: 建置 - tsconfig.json",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "outFiles": [
+        "${workspaceFolder}/dist/**/*.js",
+      ]
+    }
+  ]
+}
