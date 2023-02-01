@@ -11,5 +11,12 @@ export interface ApplicationConfig {
     addressPrefix: string;
     cooldown: number;
     fee: string;
-  };
+  },
+  db: {
+    host: string;
+    port: number;
+    database: string;
+    user: string;
+    password: string;
+  }
 }

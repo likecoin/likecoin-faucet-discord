@@ -2,9 +2,12 @@ import { SlashCommandBuilder } from '@discordjs/builders';
 import { CommandInteraction } from 'discord.js';
 import CosmosClient from '../client/cosmos';
 import { Command } from '../models/discord/command';
+import { User, Drop, initDB } from '../hooks/db';
 import Config from '../config/config';
 
 const FaucetModule = (cosmosClient: CosmosClient): Command => {
+  // eslint-disable-next-line no-void
+  void initDB();
 
   const config = new SlashCommandBuilder()
     .setName('faucet')
@@ -28,12 +31,33 @@ const FaucetModule = (cosmosClient: CosmosClient): Command => {
       return;
     }
 
+    const discordId = interaction.user.id;
     const address = interaction.options.getString('address', true);
 
     console.debug(`Token request to address ${address}`);
+    const lastDrop = await Drop.findOne({ where: { discordId: discordId }, order: [['createdAt', 'DESC']] });
+    if (lastDrop
+      && (lastDrop.get('createdAt') as Date) > new Date(Date.now() - Config.faucet.cooldown * 24 * 60 * 60 * 1000)
+    ) {
+      const txHash = lastDrop.get('txHash');
+      await interaction.editReply(
+        `:negative_squared_cross_mark: Each user can only claim once, txhash: [${txHash}](${Config.faucet.restUrl}/cosmos/tx/v1beta1/txs/${txHash}).`,
+      );
+      return;
+    }
 
     try {
       const txHash = await cosmosClient.distribute(address);
+      await Drop.create({
+        discordId: discordId,
+        address: address,
+        amount: Config.faucet.amount,
+        txHash: txHash,
+      });
+      await User.upsert({
+        username: interaction.user.username,
+        discordId: discordId,
+      });
       await interaction.editReply(
         `:white_check_mark: Transaction submitted, txhash: [${txHash}](${Config.faucet.restUrl}/cosmos/tx/v1beta1/txs/${txHash})`,
       );

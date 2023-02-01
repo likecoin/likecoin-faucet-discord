@@ -21,6 +21,13 @@ const config: ApplicationConfig = {
       : 1000000000,
     fee: process.env.FAUCET_FEE ?? '20000000',
   },
+  db: {
+    host: process.env.DB_HOST ?? 'localhost',
+    port: process.env.DB_PORT ? parseInt(process.env.DB_PORT, 10) : 5432,
+    database: process.env.DB_NAME ?? 'faucet-discord',
+    user: process.env.DB_USER ?? 'postgres',
+    password: process.env.DB_PASSWORD ?? '',
+  },
 };
 
 export default config;
