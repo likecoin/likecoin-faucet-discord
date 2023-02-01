@@ -1,5 +1,3 @@
-import { Interval } from 'limiter';
-
 export interface ApplicationConfig {
   env: string;
   discordToken: string;
@@ -11,7 +9,7 @@ export interface ApplicationConfig {
     denom: string;
     amount: number;
     addressPrefix: string;
-    cooldown: Interval;
+    cooldown: number;
     fee: string;
   };
 }

@@ -2,11 +2,9 @@ import { SlashCommandBuilder } from '@discordjs/builders';
 import { CommandInteraction } from 'discord.js';
 import CosmosClient from '../client/cosmos';
 import { Command } from '../models/discord/command';
-import { useRateLimiter } from '../hooks/limiter';
 import Config from '../config/config';
 
 const FaucetModule = (cosmosClient: CosmosClient): Command => {
-  const rateLimiter = useRateLimiter(Config.faucet.cooldown);
 
   const config = new SlashCommandBuilder()
     .setName('faucet')
@@ -34,17 +32,8 @@ const FaucetModule = (cosmosClient: CosmosClient): Command => {
 
     console.debug(`Token request to address ${address}`);
 
-    const rateLimited = rateLimiter.get(address);
-    if (rateLimited) {
-      await interaction.editReply(
-        `:negative_squared_cross_mark: Token already sent to address: \`${address}\`, Please come back again in a day`,
-      );
-      return;
-    }
-
     try {
       const txHash = await cosmosClient.distribute(address);
-      rateLimiter.limit(address);
       await interaction.editReply(
         `:white_check_mark: Transaction submitted, txhash: [${txHash}](${Config.faucet.restUrl}/cosmos/tx/v1beta1/txs/${txHash})`,
       );
