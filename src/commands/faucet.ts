@@ -37,7 +37,7 @@ const FaucetModule = (cosmosClient: CosmosClient): Command => {
     console.debug(`Token request to address ${address}`);
     const lastDrop = await Drop.findOne({ where: { discordId: discordId }, order: [['createdAt', 'DESC']] });
     if (lastDrop
-      && (lastDrop.get('createdAt') as Date) > new Date(Date.now() - Config.faucet.cooldown * 24 * 60 * 60 * 1000)
+      && (lastDrop.get('createdAt') as Date) > new Date(Date.now() - Config.faucet.cooldownInDay * 24 * 60 * 60 * 1000)
     ) {
       const txHash = lastDrop.get('txHash');
       await interaction.editReply(

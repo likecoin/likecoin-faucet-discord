@@ -8,8 +8,8 @@ const config: ApplicationConfig = {
   discordToken: process.env.DISCORD_TOKEN ?? '',
   channelId: process.env.CHANNEL_ID ?? '',
   faucet: {
-    cooldown: process.env.FAUCET_COOLDOWN 
-      ? parseInt(process.env.FAUCET_COOLDOWN, 10)
+    cooldownInDay: process.env.FAUCET_COOLDOWN_IN_DAY 
+      ? parseInt(process.env.FAUCET_COOLDOWN_IN_DAY, 10)
       : 365,
     addressPrefix: process.env.FAUCET_ADDRESS_PREFIX ?? 'cosmos',
     mnemonic: process.env.FAUCET_MNEMONIC ?? '',

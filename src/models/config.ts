@@ -9,7 +9,7 @@ export interface ApplicationConfig {
     denom: string;
     amount: number;
     addressPrefix: string;
-    cooldown: number;
+    cooldownInDay: number;
     fee: string;
   },
   db: {
