@@ -11,3 +11,10 @@ services:
     env_file:
       - ./.env
     command: ["yarn", "dev"]
+  db-dev:
+    image: postgres:12.3
+    profiles: [scripts]
+    environment:
+      POSTGRES_DB: faucet-discord
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
