@@ -24,7 +24,7 @@ const config: ApplicationConfig = {
   db: {
     host: process.env.DB_HOST ?? 'localhost',
     port: process.env.DB_PORT ? parseInt(process.env.DB_PORT, 10) : 5432,
-    database: process.env.DB_NAME ?? 'faucet-discord',
+    database: process.env.DB_NAME ?? 'faucet_discord',
     user: process.env.DB_USER ?? 'postgres',
     password: process.env.DB_PASSWORD ?? '',
   },
