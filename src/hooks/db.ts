@@ -3,6 +3,8 @@ import Config from '../config/config';
 
 const sequelize = new Sequelize(Config.db.database, Config.db.user, Config.db.password, {
   dialect: 'postgres',
+  host: Config.db.host,
+  port: Config.db.port,
 });
 
 export class User extends Model {}
