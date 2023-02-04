@@ -1,31 +1,18 @@
 import { Sequelize, Model, DataTypes } from 'sequelize';
 import Config from '../config/config';
 
-const sequelize = new Sequelize(Config.db.database, Config.db.user, Config.db.password, {
+export const sequelize = new Sequelize(Config.db.database, Config.db.user, Config.db.password, {
   dialect: 'postgres',
   host: Config.db.host,
   port: Config.db.port,
 });
 
-export class User extends Model {}
-
-User.init({
-  username: {
-    type: DataTypes.STRING,
-  },
-  discordId: {
-    type: DataTypes.STRING,
-    unique: true,
-    allowNull: false,
-  },
-}, {
-  sequelize,
-  modelName: 'User',
-});
-
 export class Drop extends Model {}
 
 Drop.init({
+  username: {
+    type: DataTypes.STRING,
+  },
   discordId: {
     type: DataTypes.STRING,
     allowNull: false,
