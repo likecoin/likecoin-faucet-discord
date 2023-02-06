@@ -1,5 +1,7 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { CommandInteraction } from 'discord.js';
+import { Transaction, Op } from 'sequelize';
+
 import CosmosClient from '../client/cosmos';
 import { Command } from '../models/discord/command';
 import { sequelize, Drop, initDB } from '../hooks/db';
@@ -35,37 +37,50 @@ const FaucetModule = (cosmosClient: CosmosClient): Command => {
     const address = interaction.options.getString('address', true);
 
     console.debug(`Token request to address ${address}`);
-    const result = await sequelize.transaction(async (t) => {
-      const lastDrop = await Drop.findOne({
-        where: { discordId: discordId },
-        order: [['createdAt', 'DESC']],
-        lock: true,
-        skipLocked: true,
-        transaction: t,
-      });
-      if (lastDrop
-        && (lastDrop.get('createdAt') as Date) > new Date(Date.now() - Config.faucet.cooldownInDay * 24 * 60 * 60 * 1000)
-      ) {
-        const txHash = lastDrop.get('txHash');
-        return `:negative_squared_cross_mark: Each user can only claim once, your previous txhash: [${txHash}](${Config.faucet.restUrl}/cosmos/tx/v1beta1/txs/${txHash}).`;
+    const [drop, created] = await sequelize.transaction(
+      {
+        isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
+      },
+      async (t) => {
+        const result = await Drop.findOrCreate({
+          transaction: t,
+          where: {
+            createdAt: {
+              [Op.gt]: new Date(Date.now() - Config.faucet.cooldownInDay * 24 * 60 * 60 * 1000),
+            },
+            [Op.or]: [
+              { discordId: discordId },
+              { address: address },
+            ],
+          },
+          defaults: {
+            username: interaction.user.username,
+            discordId: discordId,
+            address: address,
+            amount: Config.faucet.amount,
+            txHash: 'pending',
+            createdAt: new Date(),
+          },
+        });
+        return result;
       }
+    );
 
-      try {
-        const txHash = await cosmosClient.distribute(address);
-        await Drop.create({
-          username: interaction.user.username,
-          discordId: discordId,
-          address: address,
-          amount: Config.faucet.amount,
-          txHash: txHash,
-        }, { transaction: t });
-        return `:white_check_mark: Transaction submitted, txhash: [${txHash}](${Config.faucet.restUrl}/cosmos/tx/v1beta1/txs/${txHash})`;
-      } catch (err: unknown) {
-        console.error(`Failed to create transaction to ${address} = `, err);
-        return `:warning: Failed to create transaction to \`${address}\`, Please try again later`
-      }
-    });
-    await interaction.editReply(result);
+    if (!created) {
+      const txHash = drop.get('txHash');
+      await interaction.editReply(`:negative_squared_cross_mark: Each user can only claim once, your previous txhash: [${txHash}](${Config.faucet.restUrl}/cosmos/tx/v1beta1/txs/${txHash}).`);
+      return;
+    }
+
+    try {
+      const txHash = await cosmosClient.distribute(address);
+      await drop.update({ txHash: txHash });
+      await interaction.editReply(`:white_check_mark: Transaction submitted, txhash: [${txHash}](${Config.faucet.restUrl}/cosmos/tx/v1beta1/txs/${txHash})`);
+    } catch (err: unknown) {
+      console.error(`Failed to create transaction to ${address} = `, err);
+      await drop.destroy();
+      await interaction.editReply(`:warning: Failed to create transaction to \`${address}\`, please try again later`);
+    }
   };
 
   return {
