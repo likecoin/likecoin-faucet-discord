@@ -12,7 +12,7 @@ services:
       - ./.env
     command: ["yarn", "dev"]
   db-dev:
-    image: postgres:12.3
+    image: postgres:14.4
     profiles: [scripts]
     environment:
       POSTGRES_DB: faucet_discord
