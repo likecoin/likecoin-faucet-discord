@@ -10,10 +10,13 @@ services:
       - ./:/usr/src/app
     env_file:
       - ./.env
-    command: ["yarn", "dev"]
-  db-dev:
+    command: ["yarn", "start"]
+  db:
     image: postgres:14.4
-    profiles: [scripts]
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_DB: faucet_discord
       POSTGRES_USER: postgres

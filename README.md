@@ -32,24 +32,10 @@ This creates a `.env` file under the project root directory
 
 Add necessary credentials to the `.env` file
 
-Run the following command to launch a local Postgres database
+Run the following command to launch the bot
 
 ```
-docker compose run --rm -p 127.0.0.1:5432:5432 db-dev
-```
-
-Open a new shell, run the following command to kick start the bot for development
-
-```
-$ yarn start
-```
-
-### Using Docker
-
-Alternately, you can use `docker-compose` to run the bot using the following command
-
-```
-$ docker-compose up -d discord
+$ docker-compose up -d
 ```
 
 ## Deployment
