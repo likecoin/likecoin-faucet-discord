@@ -10,4 +10,4 @@ faucet:
   denom: nanolike
   amount: "1000000000"
   addressPrefix: cosmos
-  cooldown: day
+  cooldownInDay: 1

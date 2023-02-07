@@ -1,8 +1,7 @@
 include ./Makefile.ci
 
-BUILD_TAG ?= $(shell git rev-parse --short HEAD)
-DOCKER_REGISTRY := gcr.io/oursky-kube
-DOCKER_IMAGE := ${DOCKER_REGISTRY}/likecoin-faucet:${BUILD_TAG}
+DOCKER_REGISTRY := us.gcr.io/likecoin-foundation
+DOCKER_IMAGE := ${DOCKER_REGISTRY}/like-faucet-discord:latest
 ARCH := $(shell uname -m)
 
 ifeq ($(ARCH), arm64)

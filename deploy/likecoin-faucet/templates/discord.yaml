@@ -38,7 +38,7 @@ spec:
               value: {{ .Values.faucet.amount | quote }}
             - name: FAUCET_ADDRESS_PREFIX
               value: {{ .Values.faucet.addressPrefix }}
-            - name: FAUCET_COOLDOWN
-              value: {{ .Values.faucet.cooldown }}
+            - name: FAUCET_COOLDOWN_IN_DAY
+              value: {{ .Values.faucet.cooldownInDay }}
             - name: FAUCET_FEE
               value: {{ .Values.faucet.gas | quote }}

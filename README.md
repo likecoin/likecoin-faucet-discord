@@ -32,18 +32,10 @@ This creates a `.env` file under the project root directory
 
 Add necessary credentials to the `.env` file
 
-Run the following command to kick start the bot for development
+Run the following command to launch the bot
 
 ```
-$ yarn start
-```
-
-### Using Docker
-
-Alternately, you can use `docker-compose` to run the bot using the following command
-
-```
-$ docker-compose up -d discord
+$ docker-compose up -d
 ```
 
 ## Deployment

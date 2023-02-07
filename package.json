@@ -16,9 +16,11 @@
     "discord-api-types": "0.27.2",
     "discord.js": "13.6.0",
     "dotenv": "16.0.0",
-    "limiter": "2.1.0"
+    "pg": "^8.9.0",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.28.0"
   },
-  "name": "likecoin-faucet",
+  "name": "likecoin-faucet-discord",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
