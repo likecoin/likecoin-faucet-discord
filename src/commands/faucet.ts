@@ -13,12 +13,12 @@ const FaucetModule = (cosmosClient: CosmosClient): Command => {
 
   const config = new SlashCommandBuilder()
     .setName('faucet')
-    .setDescription(`Receive test token for ${Config.env}`)
+    .setDescription(`Receive ${Config.faucet.amount / 1000000000} LIKE on ${Config.faucet.chainId}`)
     .addStringOption((option) =>
       option
         .setName('address')
         .setDescription(
-          'The like wallet address you would like us to send the test token to',
+          'The like wallet address you would like us to send the LIKE to',
         )
         .setRequired(true),
     );
@@ -60,12 +60,12 @@ const FaucetModule = (cosmosClient: CosmosClient): Command => {
           }
 
           const newDrop = await Drop.create({
-              username: interaction.user.username,
-              discordId: discordId,
-              address: address,
-              amount: Config.faucet.amount,
-              txHash: 'pending',
-            },
+            username: interaction.user.username,
+            discordId: discordId,
+            address: address,
+            amount: Config.faucet.amount,
+            txHash: 'pending',
+          },
             { transaction: t },
           );
           return [newDrop, true];
