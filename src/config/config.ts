@@ -20,6 +20,7 @@ const config: ApplicationConfig = {
       ? parseInt(process.env.FAUCET_AMOUNT, 10)
       : 1000000000,
     fee: process.env.FAUCET_FEE ?? '20000000',
+    chainViewerUrl: process.env.FAUCET_CHAIN_VIEWER_URL ?? 'https://www.mintscan.io/likecoin/txs/',
   },
   db: {
     host: process.env.DB_HOST ?? 'localhost',
