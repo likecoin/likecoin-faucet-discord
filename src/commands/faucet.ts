@@ -74,14 +74,14 @@ const FaucetModule = (cosmosClient: CosmosClient): Command => {
 
       if (!created) {
         const txHash = drop.get('txHash');
-        await interaction.editReply(`:negative_squared_cross_mark: Each user can only claim once, your past txhash: [${txHash}](${Config.faucet.restUrl}/cosmos/tx/v1beta1/txs/${txHash}).`);
+        await interaction.editReply(`:negative_squared_cross_mark: Each user can only claim once, your past txhash: [${txHash}](${Config.faucet.chainViewerUrl}/${txHash}).`);
         return;
       }
 
       try {
         const txHash = await cosmosClient.distribute(address);
         await drop.update({ txHash: txHash });
-        await interaction.editReply(`:white_check_mark: Transaction submitted, txhash: [${txHash}](${Config.faucet.restUrl}/cosmos/tx/v1beta1/txs/${txHash})`);
+        await interaction.editReply(`:white_check_mark: Transaction submitted, txhash: [${txHash}](${Config.faucet.chainViewerUrl}/${txHash})`);
       } catch (err: unknown) {
         await drop.destroy();
         throw err;

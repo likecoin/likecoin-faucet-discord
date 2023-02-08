@@ -11,6 +11,7 @@ export interface ApplicationConfig {
     addressPrefix: string;
     cooldownInDay: number;
     fee: string;
+    chainViewerUrl: string;
   },
   db: {
     host: string;
